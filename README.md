@@ -146,15 +146,8 @@ python main.py
 
 ---
 
-## 📊 Dashboard Screenshots
+## 📊 Dashboard 
 
-### Page 1: Executive Summary
-![Executive Summary](screenshots/page1_executive_summary.png)
-
-### Page 2: Model Insights
-![Model Insights](screenshots/page2_model_insights.png)
-
----
 
 ## 🧠 Business Insights
 
