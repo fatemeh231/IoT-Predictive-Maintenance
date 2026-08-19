@@ -1,10 +1,10 @@
-# 🏥 Healthcare Claims Analyzer
+# 🔧 IoT Predictive Maintenance
 
-> *"Predicting claim denials before they happen"*
+> *"Predicting machine failures 48 hours before they happen"*
 
 ![Python](https://img.shields.io/badge/Python-3.10-blue)
-![Pandas](https://img.shields.io/badge/Pandas-2.0+-green)
-![Scikit-Learn](https://img.shields.io/badge/Scikit--Learn-1.0+-orange)
+![TensorFlow](https://img.shields.io/badge/TensorFlow-2.0+-orange)
+![LSTM](https://img.shields.io/badge/LSTM-Deep%20Learning-purple)
 ![Power BI](https://img.shields.io/badge/Power%20BI-Ready-yellow)
 ![License](https://img.shields.io/badge/License-MIT-lightgrey)
 
@@ -12,33 +12,31 @@
 
 ## 📌 Overview
 
-Hospitals lose millions annually to claim denials. This project builds an **end-to-end analytics pipeline** that:
+Industrial machines break unexpectedly. Each hour of downtime costs **$50,000 – $200,000**. Most companies only find out about a failure **after** it happens—when it's already too late.
 
-- ✅ Processes **18+ million claims** from Medicare data
-- ✅ Cleans and joins **Inpatient, Outpatient, and Carrier** claims
-- ✅ Builds a **Machine Learning model** to predict claim denials
-- ✅ Achieves **97.13% accuracy** and **96% recall** for denied claims
-- ✅ Flags **high-risk claims** before submission
-- ✅ Visualizes insights in an **interactive Power BI dashboard**
+This project solves that problem by building a **real-time predictive maintenance system** that:
+- ✅ Detects anomalies using Isolation Forest
+- ✅ Predicts failures **48 hours in advance** using LSTM (Deep Learning)
+- ✅ Achieves **99.45% accuracy**
+- ✅ Saves factories **$50k+ per downtime incident**
 
 ---
 
 ## 🚀 The Pipeline
 
 ```
-Raw Data (Beneficiary + Claims)
+Raw Sensor Data (24,042 rows)
     ↓
-ETL Pipeline (Python/Pandas)
+Data Cleaning & Preprocessing
     ↓
-Data Cleaning & Joining
+Feature Engineering
+    (Rolling Stats, Lag Features, Time Features)
     ↓
-Feature Engineering (Age, Diagnosis, Claim Type)
+LSTM Model Training
     ↓
-Machine Learning (Random Forest)
+Predictions (99.45% Accuracy)
     ↓
-Predictions (DENIAL_PROBABILITY, PREDICTED_DENIED)
-    ↓
-Power BI Dashboard (Executive Summary + Model Insights)
+Power BI Dashboard
 ```
 
 ---
@@ -46,24 +44,34 @@ Power BI Dashboard (Executive Summary + Model Insights)
 ## 📁 Project Structure
 
 ```
-healthcare-claims-analyzer/
+iot-predictive-maintenance/
 ├── data/
+│   ├── raw/
+│   │   └── predictive_maintenance_v3.csv
 │   └── processed/
-│       └── claims_master.parquet
+│       ├── cleaned_data.parquet
+│       ├── X_train.npy
+│       ├── X_val.npy
+│       ├── X_test.npy
+│       ├── y_train.npy
+│       ├── y_val.npy
+│       └── y_test.npy
 ├── models/
-│   └── claim_denial_model.pkl
-├── notebooks/
-│   └── 01_data_exploration.ipynb
+│   ├── scaler.pkl
+│   ├── lstm_model.keras
+│   └── training_history.npy
 ├── output/
-│   └── claims_dashboard.pbix
+│   ├── test_predictions.csv
+│   └── iot_dashboard.pbix
 ├── screenshots/
 │   ├── page1_executive_summary.png
-│   └── page2_model_insights.png
+│   ├── page2_machine_health.png
+│   └── page3_model_insights.png
 ├── src/
 │   ├── __init__.py
-│   ├── config.py
 │   ├── cleaner.py
-│   └── model.py
+│   ├── features.py
+│   └── train_lstm.py
 ├── main.py
 ├── requirements.txt
 └── README.md
@@ -76,12 +84,11 @@ healthcare-claims-analyzer/
 | Tool | Purpose |
 | :--- | :--- |
 | **Python 3.10** | Core programming language |
-| **Pandas** | Data manipulation & cleaning |
-| **NumPy** | Numerical operations |
-| **Scikit-Learn** | Machine Learning (Random Forest) |
-| **Imbalanced-Learn** | SMOTE for class imbalance |
-| **PyArrow** | Parquet file support |
-| **Power BI** | Dashboard & visualization |
+| **Pandas / NumPy** | Data manipulation & analysis |
+| **Scikit-Learn** | Data preprocessing & scaling |
+| **TensorFlow / Keras** | LSTM model building & training |
+| **Power BI** | Interactive dashboard visualization |
+| **Joblib** | Model persistence |
 
 ---
 
@@ -89,33 +96,94 @@ healthcare-claims-analyzer/
 
 | Metric | Value |
 | :--- | :--- |
-| **Total Claims** | 18,231,617 |
-| **Denied Claims** | 417,636 (2.29%) |
-| **Model Accuracy** | **97.13%** |
-| **Recall (Denied)** | **96%** |
-| **Precision (Denied)** | 7% |
-| **F1-Score (Denied)** | 14% |
-| **High-Risk Claims (>50%)** | 5,465,051 (29.98%) |
+| **Dataset** | 24,042 rows, 20 machines, 5 sensors |
+| **Model** | LSTM (Deep Learning) |
+| **Accuracy** | **99.45%** |
+| **Precision (Failure)** | **98%** |
+| **Recall (Failure)** | **99%** |
+| **F1-Score (Failure)** | **98.5%** |
+| **False Positives** | 16 |
+| **False Negatives** | 10 |
 
-### Claim Type Distribution
+### Failure Distribution
 
-| Claim Type | Total Claims | Denied Claims | Denial Rate |
-| :--- | :--- | :--- | :--- |
-| Carrier | 1,121,004 | 417,636 | **37.26%** |
-| Outpatient | 575,092 | 0 | 0.00% |
-| Inpatient | 58,066 | 0 | 0.00% |
+| Class | Count | Percentage |
+| :--- | :--- | :--- |
+| **No Failure** | 20,482 | 85.19% |
+| **Failure** | 3,560 | 14.81% |
 
 ---
 
-## 📈 Feature Importance
+## 📈 Dashboard Features
 
-| Feature | Importance |
+### Page 1: Executive Summary
+- 6 KPI Cards (Total Machines, Readings, Predictions, Failures, Accuracy)
+- Failure by Machine Type
+- Failure Probability Distribution
+
+### Page 2: Machine Health
+- Machine Health Summary Table
+- Top 5 Machines at Risk
+- Vibration vs Temperature Scatter Chart
+
+### Page 3: Model Insights
+- Accuracy, Precision, Recall, F1 Cards
+- Confusion Matrix
+- Feature Importance
+- Model Confidence Gauge
+
+### Page 4: Predictions Explorer
+- Slicers (Machine ID, Actual Status, Predicted Status)
+- All Predictions Table
+- Prediction Confidence Trend
+
+---
+
+## 🧠 Model Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     LSTM Model Architecture                 │
+├─────────────────────────────────────────────────────────────┤
+│  Input Layer: (24 timesteps, 38 features)                  │
+│  ↓                                                          │
+│  LSTM Layer 1: 64 units, return_sequences=True             │
+│  Dropout: 0.2                                              │
+│  ↓                                                          │
+│  LSTM Layer 2: 32 units, return_sequences=False            │
+│  Dropout: 0.2                                              │
+│  ↓                                                          │
+│  Dense Layer: 16 units, ReLU activation                    │
+│  ↓                                                          │
+│  Output Layer: 1 unit, Sigmoid activation                  │
+│                                                             │
+│  Total Parameters: 39,329                                   │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 🔧 Feature Engineering
+
+| Feature Type | Examples |
 | :--- | :--- |
-| **CLAIM_TYPE** | 25.7% |
-| **PTNT_DSCHRG_STUS_CD** | 16.6% |
-| **AGE** | 16.4% |
-| **PRNCPAL_DGNS_CD** | 15.5% |
-| **CLM_TOT_CHRG_AMT** | 8.6% |
+| **Time Features** | hour, day_of_week, day_of_month |
+| **Rolling Statistics** | rolling_mean, rolling_std (window=10) |
+| **Lag Features** | lag_1, lag_2, lag_3 |
+| **Sensor Data** | vibration_rms, temperature_motor, current_phase_avg, pressure_level, rpm |
+
+---
+
+## 📸 Dashboard Screenshots
+
+### Page 1: Executive Summary
+![Executive Summary](screenshots/page1_executive_summary.png)
+
+### Page 2: Machine Health
+![Machine Health](screenshots/page2_machine_health.png)
+
+### Page 3: Model Insights
+![Model Insights](screenshots/page3_model_insights.png)
 
 ---
 
@@ -123,8 +191,8 @@ healthcare-claims-analyzer/
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/fatemeh231/healthcare-claims-analyzer.git
-cd healthcare-claims-analyzer
+git clone https://github.com/fatemeh231/IoT-Predictive-Maintenance.git
+cd IoT-Predictive-Maintenance
 ```
 
 ### 2. Install Dependencies
@@ -132,46 +200,44 @@ cd healthcare-claims-analyzer
 pip install -r requirements.txt
 ```
 
-### 3. Place Your Data
-Place your Medicare data files in `data/raw/`
-
-### 4. Run the Pipeline
+### 3. Run the Pipeline
 ```bash
 python main.py
 ```
 
-### 5. Open Power BI Dashboard
-- Open `output/claims_dashboard.pbix`
-- Connect to `data/processed/claims_master.parquet`
+### 4. Open Power BI Dashboard
+- Open `output/iot_dashboard.pbix` in Power BI Desktop
+- The data is already connected to the processed files
 
 ---
 
-## 📊 Dashboard 
+## 📊 Sample Predictions
 
-
-## 🧠 Business Insights
-
-| Insight | Action |
-| :--- | :--- |
-| **Carrier claims have 37.26% denial rate** | Investigate Carrier billing practices |
-| **Inpatient/Outpatient claims have 0% denial** | Maintain current practices |
-| **Diagnosis codes are top predictor** | Review coding accuracy |
-| **Age impacts denial probability** | Targeted review for high-risk age groups |
+| Actual | Predicted | Probability | Correct? |
+| :--- | :--- | :--- | :--- |
+| 1 | 1 | 99.91% | ✅ |
+| 0 | 0 | 0.00% | ✅ |
+| 0 | 0 | 0.00% | ✅ |
+| 0 | 0 | 0.01% | ✅ |
+| 0 | 0 | 0.00% | ✅ |
 
 ---
 
 ## 🚀 Future Improvements
 
-- [ ] Add real-time prediction API
-- [ ] Integrate with live claims systems
-- [ ] Add explainability (SHAP/LIME)
-- [ ] Deploy to cloud (AWS/Azure)
+- [ ] Add real-time data streaming (Redis / Kafka)
+- [ ] Deploy model as a REST API (FastAPI)
+- [ ] Add Telegram alerts for high-risk machines
+- [ ] Add more sensor types for better prediction
+- [ ] Dockerize the entire pipeline
+- [ ] Add unit tests
 
 ---
 
 ## 📬 Contact
 
-- **LinkedIn**: https://www.linkedin.com/in/seyedeh-fatemeh-hosseininasab-7320bb322/
+- **GitHub**: [fatemeh231](https://github.com/fatemeh231)
+- **LinkedIn**: [linkedin.com/in/seyedeh-fatemeh-hosseininasab-7320bb322](https://linkedin.com/in/seyedeh-fatemeh-hosseininasab-7320bb322)
 
 ---
 
@@ -182,3 +248,4 @@ This project is licensed under the **MIT License**.
 ---
 
 **Built with ❤️ by Fatemeh**
+
